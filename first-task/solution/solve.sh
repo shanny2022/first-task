@@ -34,7 +34,11 @@ replacements = [
 # The assessment resets to a fixed base commit, so exact source fragments keep the edit narrowly scoped.
 for index, (label, old, new) in enumerate(replacements, start=1):
     if old not in text:
-        raise RuntimeError(f'replacement {index} of {len(replacements)} failed ({label}): expected source fragment not found')
+        preview = old.splitlines()[0].strip()
+        raise RuntimeError(
+            f'replacement {index} of {len(replacements)} failed ({label}): '
+            f'expected source fragment not found; first line: {preview!r}'
+        )
     text = text.replace(old, new, 1)
 
 path.write_text(text)
