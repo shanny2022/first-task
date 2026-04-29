@@ -1,0 +1,18 @@
+{
+  "repo": "pydantic-assessment",
+  "instance_id": "instance_IGUNuQNoR8e2fHg4YM06MFx3JQF2__pydantic-assessment-9e9a111-first-task",
+  "base_commit": "9e9a11132c980c4ec84ff6d2df06d4c1a55ca8f3",
+  "test_patch": "<PASTE YOUR TEST DIFF HERE — unified diff that adds the new tests at base_commit>",
+  "fail_to_pass": [
+    "tests/test_<module>.py::test_<your_added_test>"
+  ],
+  "pass_to_pass": [
+    "tests/test_<existing_module>.py::test_<existing_test>"
+  ],
+  "selected_test_files_to_run": [
+    "tests/test_<module>.py"
+  ],
+  "patch": "<auto-derived from solution/solve.sh at submit time>",
+  "problem_statement": "<auto-derived from instruction.md at submit time>",
+  "before_repo_set_cmd": "git reset --hard 9e9a11132c980c4ec84ff6d2df06d4c1a55ca8f3 && git clean -fd"
+}
