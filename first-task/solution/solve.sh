@@ -31,7 +31,7 @@ replacements = [
     ),
 ]
 
-# The assessment resets to a fixed base commit, so exact source fragments keep the edit narrowly scoped.
+# The task runner resets /app/pydantic-assessment to the configured base commit before this script runs, so exact source fragments keep the edit narrowly scoped.
 for index, (label, old, new) in enumerate(replacements, start=1):
     if old not in text:
         preview = old.splitlines()[0].strip()
