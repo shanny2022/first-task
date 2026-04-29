@@ -23,15 +23,11 @@ replacements = [
     (
         'filter consumed alias-path roots from extras',
         "        _extra: dict[str, Any] | None = values if cls.model_config.get('extra') == 'allow' else None\n",
-        "        if cls.model_config.get('extra') == 'allow':\n"
-        "            if used_alias_path_roots:\n"
-        "                _extra: dict[str, Any] | None = {\n"
-        "                    key: value for key, value in values.items() if key not in used_alias_path_roots\n"
-        "                }\n"
-        "            else:\n"
-        "                _extra = values\n"
-        "        else:\n"
-        "            _extra = None\n",
+        "        _extra: dict[str, Any] | None = (\n"
+        "            {key: value for key, value in values.items() if key not in used_alias_path_roots}\n"
+        "            if used_alias_path_roots\n"
+        "            else values\n"
+        "        ) if cls.model_config.get('extra') == 'allow' else None\n",
     ),
 ]
 
