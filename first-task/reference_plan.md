@@ -1,8 +1,8 @@
 Root cause:
-`BaseModel.model_construct()` resolves `AliasPath` values by looking into the remaining `values` mapping, but unlike plain aliases it never marks the top-level alias-path source as consumed. When `extra='allow'`, the leftover `values` mapping is assigned to `__pydantic_extra__`, so the nested source dictionary is incorrectly retained as an extra field and appears in dumps.
+During `model_construct()`, ordinary aliases are removed from the pending input once used, but `AliasPath` lookups only copy the nested value into the field. The mapping entry that held the nested data remains in `values`, so `extra='allow'` later stores it under `__pydantic_extra__`.
 
 Intended fix:
-Track the root keys of alias paths that successfully populate fields during `model_construct()`. Do not mutate the input mapping immediately, because multiple fields can read from the same root. When extra fields are collected, exclude only those consumed alias-path roots while leaving unrelated extra keys intact.
+While walking fields, remember the first component of each `AliasPath` that successfully finds a value. Delay filtering until extra data is assembled, because several fields can depend on the same outer object. When extras are allowed, build the extra mapping without those remembered roots; otherwise keep the existing ignore/forbid behavior.
 
 Test plan:
-Add a regression test for a model with `extra='allow'` and two fields populated from the same `AliasPath` root. It should construct both fields and keep only an unrelated extra key. Add a passing control test showing plain alias extra handling remains unchanged.
+Cover an allowed-extra model populated from nested alias paths, including multiple fields sharing one outer object and the case where no unrelated extras remain. Include controls for a failed alias-path lookup, a normal alias, and `extra='ignore'`.

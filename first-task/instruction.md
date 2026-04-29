@@ -3,10 +3,8 @@
 </uploaded_files>
 I've uploaded a code repository in the directory `/app/pydantic-assessment`. Consider the following task:
 
-`BaseModel.model_construct()` does not handle `AliasPath` inputs consistently when extra fields are allowed.
+`BaseModel.model_construct()` mishandles nested validation aliases when the model allows extras.
 
-When a field is populated from a nested validation alias such as `AliasPath('payload', 'value')`, the top-level container that supplied the field should be treated as consumed input, just like a plain alias is. A model configured with `extra='allow'` should still keep unrelated extra keys, but it should not preserve the alias-path root itself in `model_extra` or include it in `model_dump()`.
+A field can be populated from a path-based alias, for example `AliasPath('envelope', 'sku')`. After that lookup succeeds, the outer key that made the lookup possible has already been used as input for model fields. In trusted construction mode, that outer key should not also be recorded as an extra attribute.
 
-For example, constructing a model with two fields read from `payload.first` and `payload.second` plus an unrelated `trace_id` extra should set both fields and keep only `trace_id` as extra. The original `payload` dictionary should not appear as an extra value.
-
-Make `model_construct()` match that behavior while preserving existing handling for plain aliases, multiple fields that read from the same alias-path root, and unrelated extra fields.
+Update construction so successful alias-path reads reserve their top-level source key for field population. Models with `extra='allow'` should still retain unrelated entries, such as an audit identifier supplied beside the nested data, and ordinary aliases should continue to behave as they do today. Be careful not to remove a path root unless a field was actually populated from that path, since a missing nested value should leave the original input available as extra data.
